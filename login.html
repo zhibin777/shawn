@@ -140,13 +140,14 @@
             method: 'POST',
             data: obj
           })
-          console.log(data)
           toastBody.innerHTML = message
           toast.show()
+          console.log(data)
           localStorage.setItem('token', data.token)
+          localStorage.setItem('uname', data.username)
           location.href = './index.html'
         } catch (err) {
-          console.dir(err)
+          // console.dir(err)
           const {response: {status, data: {message}}} = err
           if (status === 400) {
             toastBody.innerHTML = message
