@@ -291,9 +291,6 @@
     document.addEventListener('DOMContentLoaded', async function() {
       const result = await axios({
         url: '/dashboard',
-        headers: {
-          Authorization: token
-        }
       })
       console.log(result)
     })
