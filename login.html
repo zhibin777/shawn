@@ -135,7 +135,7 @@
         toast.show()
       } else {
         try {
-          const {data: {data, message}} = await axios({
+          const {data, message} = await axios({
             url: '/login',
             method: 'POST',
             data: obj

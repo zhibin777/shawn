@@ -21,8 +21,14 @@ axios.interceptors.request.use(function(config) {
 })
 
 axios.interceptors.response.use(function(response) {
-
+  
   return response.data
 }, function(error) {
+  console.dir(error)
+  if (error.response.status === 401) {
+    // 被动退出登录
+    localStorage.clear()
+    location.href = './login.html'
+  }
   return Promise.reject(error)
 })

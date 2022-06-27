@@ -144,7 +144,7 @@
       } else {
         // 通过校验
         try {
-          const {data: res} = await axios({
+          const res = await axios({
             url: '/register',
             method: 'POST',
             data: formObj
