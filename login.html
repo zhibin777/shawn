@@ -134,15 +134,17 @@
         toastBody.innerHTML = '密码在6-30个字符之间'
         toast.show()
       } else {
-        console.log(123)
         try {
-          const {data: {message}} = await axios({
+          const {data: {data, message}} = await axios({
             url: '/login',
             method: 'POST',
             data: obj
           })
+          console.log(data)
           toastBody.innerHTML = message
           toast.show()
+          localStorage.setItem('token', data.token)
+          location.href = './index.html'
         } catch (err) {
           console.dir(err)
           const {response: {status, data: {message}}} = err
