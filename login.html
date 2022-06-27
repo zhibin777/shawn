@@ -121,6 +121,39 @@
         delay: 3000
     })
     const toastBody = document.querySelector('.toast-body')
+
+    document.querySelector('#btn-login').addEventListener('click', async function() {
+      const formEl = document.querySelector('form')
+      const obj = serialize(formEl, {hash: true})
+
+      const {username = '', password = ''} = obj
+      if (username.length < 2 || username.length > 30) {
+        toastBody.innerHTML = '用户名在2-30个字符之间'
+        toast.show()
+      } else if (password.length < 6 || password.length > 60) {
+        toastBody.innerHTML = '密码在6-30个字符之间'
+        toast.show()
+      } else {
+        console.log(123)
+        try {
+          const {data: {message}} = await axios({
+            url: '/login',
+            method: 'POST',
+            data: obj
+          })
+          toastBody.innerHTML = message
+          toast.show()
+        } catch (err) {
+          console.dir(err)
+          const {response: {status, data: {message}}} = err
+          if (status === 400) {
+            toastBody.innerHTML = message
+            toast.show()
+          }
+        }
+      }
+      
+    })
   </script>
 </body>
 
