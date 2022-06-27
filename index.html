@@ -269,11 +269,35 @@
   <script src="./js/common.js"></script>
   <script src="./lib/china.js"></script>
   <script>
+    axios.defaults.baseURL = 'http://ajax-api.itheima.net'
     const token = localStorage.getItem('token')
     // token拦截
     if (token === null) {
       location.href = './login.html'
     }
+    // 头像
+    const username = localStorage.getItem('uname')
+    document.querySelector('.navbar-nav .font-weight-bold').innerHTML = username
+
+    // 点击退出
+    document.querySelector('#logout').addEventListener('click', function() {
+      console.log(123)
+      // localStorage.clear()
+      // location.href = './login.html'
+    })
+
+    // 获取index页面数据
+    // DOMContentLoaded等待真实DOM挂载完毕再触发此事件(一般应用于js代码写在标签上面)
+    document.addEventListener('DOMContentLoaded', async function() {
+      const result = await axios({
+        url: '/dashboard',
+        headers: {
+          Authorization: token
+        }
+      })
+      console.log(result)
+    })
+
   </script>
 </body>
 
