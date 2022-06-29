@@ -620,7 +620,124 @@
       myChart.setOption(option)
     }
 
+    // 国家地图
+    const initAreaMap = function(provinceData) {
+      const myChart = echarts.init(document.querySelector('#map'))
+      const dataList = [
+        { name: '南海诸岛', value: 0 },
+        { name: '北京', value: 0 },
+        { name: '天津', value: 0 },
+        { name: '上海', value: 0 },
+        { name: '重庆', value: 0 },
+        { name: '河北', value: 0 },
+        { name: '河南', value: 0 },
+        { name: '云南', value: 0 },
+        { name: '辽宁', value: 0 },
+        { name: '黑龙江', value: 0 },
+        { name: '湖南', value: 0 },
+        { name: '安徽', value: 0 },
+        { name: '山东', value: 0 },
+        { name: '新疆', value: 0 },
+        { name: '江苏', value: 0 },
+        { name: '浙江', value: 0 },
+        { name: '江西', value: 0 },
+        { name: '湖北', value: 0 },
+        { name: '广西', value: 0 },
+        { name: '甘肃', value: 0 },
+        { name: '山西', value: 0 },
+        { name: '内蒙古', value: 0 },
+        { name: '陕西', value: 0 },
+        { name: '吉林', value: 0 },
+        { name: '福建', value: 0 },
+        { name: '贵州', value: 0 },
+        { name: '广东', value: 0 },
+        { name: '青海', value: 0 },
+        { name: '西藏', value: 0 },
+        { name: '四川', value: 0 },
+        { name: '宁夏', value: 0 },
+        { name: '海南', value: 0 },
+        { name: '台湾', value: 0 },
+        { name: '香港', value: 0 },
+        { name: '澳门', value: 0 },
+      ]
+      
+      // 数据设置
+      dataList.forEach((item) => {
+          // 把每个城市对象遍历过来, 去数组data里循环数据的value, 然后设置到dataList的对象中, 应用到图表里
+          // 数据里名字和上面的名字有点不太一样, 需要把多余的文字去掉(替换成空字符串)
+          // find() 方法返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined。
+          // replace() 方法返回一个由替换值（replacement）替换部分或所有的模式（pattern）匹配项后的新字符串
+          const obj = provinceData.find((it) => it.name.replace(/省|回族自治区|吾尔自治区|壮族自治区|特别行政区|自治区/g, '') === item.name)
+          if (obj) item.value = obj.value
+      })
 
+      const option = {
+        title: {
+          text: '籍贯分布',
+          top: 10,
+          left: 10,
+          textStyle: {
+            fontSize: 16,
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c} 位学员',
+          borderColor: 'transparent',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          textStyle: {
+            color: '#fff',
+          },
+        },
+        visualMap: {
+          min: 0,
+          max: 6,
+          left: 'left',
+          bottom: '20',
+          text: ['6', '0'],
+          inRange: {
+            color: ['#ffffff', '#0075F0'],
+          },
+          show: true,
+          left: 40,
+        },
+        geo: { // 地理坐标系组件
+          map: 'china',
+          roam: false,
+          zoom: 1.0,
+          label: {
+            normal: {
+              show: true,
+              fontSize: '10',
+              color: 'rgba(0,0,0,0.7)',
+            },
+          },
+          itemStyle: {
+            normal: {
+              borderColor: 'rgba(0, 0, 0, 0.2)',
+              color: '#e0ffff',
+            },
+            emphasis: {
+              areaColor: '#34D39A',
+              shadowOffsetX: 0,
+              shadowOffsetY: 0,
+              shadowBlur: 20,
+              borderWidth: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)',
+            },
+          },
+        },
+        series: [
+          {
+            name: '籍贯分布',
+            type: 'map',
+            geoIndex: 0,
+            data: dataList,
+          },
+        ],
+      }
+      myChart.setOption(option)
+    }
 
   </script>
 </body>
