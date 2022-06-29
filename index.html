@@ -555,6 +555,72 @@
       })
     }
 
+    // 二饼图
+    const initGenderPie = function(salaryData) {
+      const myChart = echarts.init(document.querySelector('#gender'))
+      const option = {
+        title: [
+          {
+            text: '男女薪资分布',
+            left: 10,
+            top: 10,
+            textStyle: {
+              fontSize: 16
+            }
+          },{
+            text: '男生',
+            left: '50%',
+            top: '45%',
+            textAlign: 'center',
+            textStyle: {
+              fontSize: 12
+            }
+          },{
+            text: '女生',
+            left: '50%',
+            top: '85%',
+            textAlign: 'center',
+            textStyle: {
+              fontSize: 12
+            }
+          }
+        ],
+        tooltip: {
+            trigger: 'item'
+        },
+        color: ['#FDA224', '#5097FF', '#3ABCFA', '#34D39A'],
+        series: [
+          {
+            name: 'boys',
+            type: 'pie',
+            radius: ['20%', '30%'],
+            center: ['50%', '30%'],
+            datasetIndex: 1,
+            data: salaryData.map(item => {
+              return {
+                name: item.label,
+                value: item.b_count
+              }
+            })
+          },{
+            name: 'girls',
+            type: 'pie',
+            radius: ['20%', '30%'],
+            center: ['50%', '70%'],
+            datasetIndex: 2,
+            data: salaryData.map(item => {
+              return {
+                name: item.label,
+                value: item.g_count
+              }
+            })
+          }
+        ]
+      }
+      myChart.setOption(option)
+    }
+
+
 
   </script>
 </body>
