@@ -299,8 +299,35 @@
       for (let key in overview) {
         document.querySelector(`[name=${key}]`).innerHTML = overview[key]
       }
+
+      // const let 定义的函数表达式不会提升,所以要注意顺序
+      // 另起一个script函数成了全局的了所以可以进行调用
+      initSalaryLine()
     })
 
+  </script>
+  <script>
+    // 铺设薪资走势
+    const initSalaryLine = function() {
+      const myChart = echarts.init(document.querySelector('#line'))      
+      const option = {
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            type: 'line',
+            smooth: true
+          }
+        ]
+      }
+      myChart.setOption(option);
+    }
   </script>
 </body>
 
