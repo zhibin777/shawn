@@ -292,6 +292,13 @@
         url: '/dashboard',
       })
       console.log(result)
+      // const {data: {overview: {age, group_count, salary, student_count}}} = result
+      // document.querySelector('[name=salary]').innerHTML = salary
+
+      const {data: {overview}} = result
+      for (let key in overview) {
+        document.querySelector(`[name=${key}]`).innerHTML = overview[key]
+      }
     })
 
   </script>
