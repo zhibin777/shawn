@@ -295,7 +295,7 @@
       // const {data: {overview: {age, group_count, salary, student_count}}} = result
       // document.querySelector('[name=salary]').innerHTML = salary
 
-      const {data: {overview, year}} = result
+      const {data: {overview, year, salaryData}} = result
       for (let key in overview) {
         document.querySelector(`[name=${key}]`).innerHTML = overview[key]
       }
@@ -303,6 +303,7 @@
       // const let 定义的函数表达式不会提升,所以要注意顺序
       // 另起一个script函数成了全局的了所以可以进行调用
       initSalaryLine(year)
+      initSalaryPie(salaryData)
     })
 
   </script>
@@ -392,6 +393,54 @@
         ]
       }
       myChart.setOption(option);
+    }
+    // 饼状图
+    const initSalaryPie = function(salaryData) {
+      const myChart = echarts.init(document.querySelector('#salary'))
+      const option = {
+        tooltip: { // 提示框组件
+            trigger: 'item' // 放到某项触发提示框
+        },
+        legend: { // 图例组件(表示每种颜色的概念)
+            top: '5%', // 具体容器顶部5%距离(容器高度换算)
+            left: 'center' // 图例组件居中显示
+        },
+        series: [ // 系列数据(重要)
+          {
+            name: 'Access From', // 系列名称，用于tooltip的显示
+            type: 'pie', // 图形类型'pie'固定代表饼状图
+            radius: ['40%', '70%'], // 饼图的半径(内圈, 外圈) 表示外半径为可视区尺寸（容器高宽中较小一项）的 20%
+
+            itemStyle: { // 图形样式
+                borderRadius: 10, // 表示内圆角半径和外圆角半径
+                borderColor: '#fff', // 图形的描边颜色
+                borderWidth: 2 // 描边线宽(为0无描边)
+            },
+            label: { // 饼图图形上的文本标签(默认上来显示的, 鼠标移入是另外配置)
+                show: false, // 隐藏
+                position: 'center' // 让他们出现在中心
+            },
+
+            labelLine: { // 标签的视觉引导线配置(就是解释每块图形的文本标签连线)
+                show: false
+            },
+            // data: [ // 系列数据
+            //     { value: 1048, name: 'Search Engine' },
+            //     { value: 735, name: 'Direct' },
+            //     { value: 580, name: 'Email' },
+            //     { value: 484, name: 'Union Ads' },
+            //     { value: 300, name: 'Video Ads' },
+            // ]
+            data: salaryData.map(item => {
+              return { // 这个return的是对象,map把对象一起放到了一个数组里
+                value: item.g_count + item.b_count,
+                name: item.label
+              }
+            })
+          }
+        ]
+      }
+      myChart.setOption(option)
     }
   </script>
 </body>
