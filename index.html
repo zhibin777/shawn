@@ -295,34 +295,99 @@
       // const {data: {overview: {age, group_count, salary, student_count}}} = result
       // document.querySelector('[name=salary]').innerHTML = salary
 
-      const {data: {overview}} = result
+      const {data: {overview, year}} = result
       for (let key in overview) {
         document.querySelector(`[name=${key}]`).innerHTML = overview[key]
       }
 
       // const let 定义的函数表达式不会提升,所以要注意顺序
       // 另起一个script函数成了全局的了所以可以进行调用
-      initSalaryLine()
+      initSalaryLine(year)
     })
 
   </script>
   <script>
     // 铺设薪资走势
-    const initSalaryLine = function() {
+    const initSalaryLine = function(year) {
       const myChart = echarts.init(document.querySelector('#line'))      
+      const xData = year.map(item => item.month)
+      const yData = year.map(item => item.salary)
       const option = {
+        title: {
+          text: '2021全学科薪资走势',
+          textStyle: {
+            fontSize: 16
+          },
+          left: 10,
+          top: 15
+        } ,
+        grid: { // 绘图网格距离上面组件距离(高度百分比)
+          top: '20%',
+        },
+        tooltip: { // 提示组件
+          trigger: 'axis',
+        },
         xAxis: {
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          data: xData,
+          axisLine: {
+            lineStyle: {
+              color: '#ccc',
+              type: 'dashed'
+            }
+          },
+          axisLabel: {
+            color: '#999'
+          }
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          splitLine: { // y轴线是横着的
+            lineStyle: {
+              type: 'dashed'
+            }
+          }
         },
         series: [
           {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            data: yData,
             type: 'line',
-            smooth: true
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 10,
+            lineStyle: {
+              width: 6,
+              color: { // web中左上角为坐标0,0
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 1,
+                y2: 0,
+                colorStops: [{
+                  offset: 0, color: '#499FEE' // 0% 处的颜色
+                },{
+                  offset: 1, color: '#5D75F0' // 100% 处的颜色
+                }],
+                global: false // 缺省为 false
+              }
+            },
+            areaStyle: {
+              color: { // web中左上角为坐标0,0
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [{
+                  offset: 0, color: '#499FEE' // 0% 处的颜色
+                },{
+                  offset: 0.8, color: 'rgba(255, 255, 255, 0.2)'
+                },{
+                  offset: 1, color: 'rgba(255, 255, 255, 0)' // 100% 处的颜色
+                }],
+                global: false // 缺省为 false
+              }
+            }
           }
         ]
       }
