@@ -355,7 +355,39 @@
     })
   </script>
   <script>
-    
+    // 获取数据
+    const getResult = async function() {
+      const result = await axios({
+        url: '/students'
+      })
+      console.log(result)
+      renderList(result.data)
+    }
+    getResult()
+    // 数据渲染页面
+    const renderList = function(data = []) { 
+      const trStr = data.map(item => {
+        return `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.age}</td>
+          <td>${item.gender===1?'女':'男'}</td>
+          <td>${item.group}</td>
+          <td>${item.hope_salary}</td>
+          <td>${item.salary}</td>
+          <td>${item.province}${item.city}${item.area}</td>
+          <td>
+            <a href="javascript:;" class="text-success mr-3"><i class="bi bi-pen"></i></a>
+            <a href="javascript:;" class="text-danger"><i class="bi bi-trash"></i></a>
+          </td>
+        </tr>
+        `
+      }).join('')
+      document.querySelector('.list').innerHTML = trStr
+    }
+    renderList()
+
+
   </script>
 </body>
 
