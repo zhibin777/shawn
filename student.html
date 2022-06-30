@@ -255,7 +255,7 @@
       </div>
     </div>
   </div>
-  <!-- add Modal -->
+  <!-- add Modal添加学生的提示框 -->
   <div class="modal fade" id="modal">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -355,6 +355,8 @@
     })
   </script>
   <script>
+    // 初始化模态窗
+    var myModal = new bootstrap.Modal(document.getElementById('modal'), {keyboard: false})
     // 获取数据
     const getResult = async function() {
       const result = await axios({
@@ -393,17 +395,72 @@
         // console.log(e.target.classList) .contains()
         if (e.target.className.indexOf('bi-trash') >= 0) {
           const id = e.target.dataset.id
-          console.log(id)
-          const result = axios({
+          axios({
             url: `/students/${id}`,
             method: 'DELETE'
           })
-          console.log(result)
           getResult()
         }
       })
     }
     removeTr()
+
+    // 添加学生 提示框使用的是bootstrap
+    document.querySelector('.bi-plus').addEventListener('click', function() {
+      myModal.show()
+    })
+    // 初始化省份列表
+    const ps = document.querySelector('[name=province]')
+    const cs = document.querySelector('[name=city]')
+    const as = document.querySelector('[name=area]')
+
+    const initPCA = async function() {
+      // 省的铺设
+      const {data: province} = await axios({
+        url: '/api/province'
+      })
+      const phtml = province.map(item => `<option value="${item}">${item}</option>`).join()
+      ps.innerHTML = `<option value="">--省份--</option>${phtml}`
+
+      // 省的change事件
+      ps.addEventListener('change', async function() {
+        if (ps.value) {
+          console.log(ps.value)
+          const {data: city} = await axios({
+            url: '/api/city',
+            params: {pname: ps.value}
+          })
+          console.log(city)
+          const chtml = city.map(item => `<option value="${item}">${item}</option>`).join('')
+          cs.innerHTML = `<option value="">--省份--</option>${chtml}`
+        } else {
+          cs.innerHTML = `<option value="">--城市--</option>`
+          as.innerHTML = `<option value="">--地区--</option>`
+        }
+
+        //市的change事件
+        cs.addEventListener('change', async function() {
+          if (cs.value) {
+            console.log(cs.value, ps.value)
+            const {data: area} = await axios({
+              url: '/api/area',
+              params: {
+                pname: ps.value,
+                cname: cs.value
+              }
+            })
+            console.log(area)
+            const ahtml = area.map(item => `<option value="${item}">--${item}--</option>`).join('')
+            as.innerHTML = `<option value="">--地区--</option>${ahtml}`
+          } else {
+            as.innerHTML = `<option value="">--地区--</option>`
+          }
+        })
+
+      }) 
+
+    }
+    initPCA()
   </script>
 </body>
 
