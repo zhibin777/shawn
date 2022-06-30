@@ -378,16 +378,32 @@
           <td>${item.province}${item.city}${item.area}</td>
           <td>
             <a href="javascript:;" class="text-success mr-3"><i class="bi bi-pen"></i></a>
-            <a href="javascript:;" class="text-danger"><i class="bi bi-trash"></i></a>
+            <a href="javascript:;" class="text-danger"><i class="bi bi-trash" data-id=${item.id}></i></a>
           </td>
         </tr>
         `
       }).join('')
       document.querySelector('.list').innerHTML = trStr
+      document.querySelector('.total').innerHTML = data.length
     }
     renderList()
 
-
+    const removeTr = function() {
+      document.querySelector('.list').addEventListener('click', function(e) {
+        // console.log(e.target.classList) .contains()
+        if (e.target.className.indexOf('bi-trash') >= 0) {
+          const id = e.target.dataset.id
+          console.log(id)
+          const result = axios({
+            url: `/students/${id}`,
+            method: 'DELETE'
+          })
+          console.log(result)
+          getResult()
+        }
+      })
+    }
+    removeTr()
   </script>
 </body>
 
