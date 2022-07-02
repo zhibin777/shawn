@@ -360,9 +360,9 @@
             smooth: true,
             symbol: 'circle',
             symbolSize: 10,
-            lineStyle: {
+            lineStyle: { // web中左上角为坐标0,0
               width: 6,
-              color: { // web中左上角为坐标0,0
+              color: { // x,y和x2,y2
                 type: 'linear',
                 x: 0,
                 y: 0,
@@ -673,7 +673,6 @@
       // 主角是item,需要改变的是item的value,item的name不需要改变.provinceData里的name(给他人作嫁衣).
       dataList.forEach((item) => {
           const obj = provinceData.find((it) => it.name.replace(/省|回族自治区|吾尔自治区|壮族自治区|特别行政区|自治区/g, '') === item.name)
-          console.log(obj)
           if (obj) item.value = obj.value
       })
 

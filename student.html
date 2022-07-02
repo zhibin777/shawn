@@ -355,6 +355,7 @@
     })
   </script>
   <script>
+    let editId = ''
     // 初始化模态窗
     var myModal = new bootstrap.Modal(document.getElementById('modal'), {keyboard: false})
     // 获取数据
@@ -379,8 +380,8 @@
           <td>${item.salary}</td>
           <td>${item.province}${item.city}${item.area}</td>
           <td>
-            <a href="javascript:;" class="text-success mr-3"><i class="bi bi-pen"></i></a>
-            <a href="javascript:;" class="text-danger"><i class="bi bi-trash" data-id=${item.id}></i></a>
+            <a href="javascript:;" class="text-success mr-3"><i class="bi bi-pen" data-id="${item.id}"></i></a>
+            <a href="javascript:;" class="text-danger"><i class="bi bi-trash" data-id="${item.id}"></i></a>
           </td>
         </tr>
         `
@@ -388,28 +389,29 @@
       document.querySelector('.list').innerHTML = trStr
       document.querySelector('.total').innerHTML = data.length
     }
-    renderList()
 
-    const removeTr = function() {
-      document.querySelector('.list').addEventListener('click', function(e) {
-        // console.log(e.target.classList) .contains()
-        if (e.target.className.indexOf('bi-trash') >= 0) {
-          const id = e.target.dataset.id
-          axios({
-            url: `/students/${id}`,
-            method: 'DELETE'
-          })
-          getResult()
-        }
-      })
-    }
-    removeTr()
-
-    // 添加学生 提示框使用的是bootstrap
-    document.querySelector('.bi-plus').addEventListener('click', function() {
-      myModal.show()
+    // 删除
+    document.querySelector('.list').addEventListener('click', async function(e) {
+      // console.log(e.target.classList) .contains()
+      if (e.target.className.indexOf('bi-trash') >= 0) {
+        const id = e.target.dataset.id
+        await axios({
+          url: `/students/${id}`,
+          method: 'DELETE'
+        })
+        getResult()
+      }
     })
-    // 初始化省份列表
+
+    // 添加 提示框使用的是bootstrap
+    document.querySelector('.bi-plus').addEventListener('click', function() {
+      editId = ''
+      myModal.show()
+      document.querySelector('.modal-title').innerHTML = '添加学员'
+      document.querySelector('#form').reset() // 清空表单
+    })
+
+    // 省市区的联动铺设
     const ps = document.querySelector('[name=province]')
     const cs = document.querySelector('[name=city]')
     const as = document.querySelector('[name=area]')
@@ -422,15 +424,13 @@
       const phtml = province.map(item => `<option value="${item}">${item}</option>`).join()
       ps.innerHTML = `<option value="">--省份--</option>${phtml}`
 
-      // 省的change事件
+      // 省的change事件,用来铺设市
       ps.addEventListener('change', async function() {
         if (ps.value) {
-          console.log(ps.value)
           const {data: city} = await axios({
             url: '/api/city',
             params: {pname: ps.value}
           })
-          console.log(city)
           const chtml = city.map(item => `<option value="${item}">${item}</option>`).join('')
           cs.innerHTML = `<option value="">--省份--</option>${chtml}`
         } else {
@@ -438,10 +438,9 @@
           as.innerHTML = `<option value="">--地区--</option>`
         }
 
-        //市的change事件
+        //市的change事件,用来铺设区
         cs.addEventListener('change', async function() {
           if (cs.value) {
-            console.log(cs.value, ps.value)
             const {data: area} = await axios({
               url: '/api/area',
               params: {
@@ -449,7 +448,6 @@
                 cname: cs.value
               }
             })
-            console.log(area)
             const ahtml = area.map(item => `<option value="${item}">--${item}--</option>`).join('')
             as.innerHTML = `<option value="">--地区--</option>${ahtml}`
           } else {
@@ -461,6 +459,76 @@
 
     }
     initPCA()
+
+    // 点击确定
+    document.querySelector('#submit').addEventListener('click', async function() {
+      const data = serialize(document.querySelector('#form'), {hash: true})
+      data.age = +data.age
+      data.gender = +data.gender
+      data.hope_salary = +data.hope_salary
+      data.salary = +data.salary
+      data.group = +data.group
+      
+      if (editId === '') {
+        const result = await axios({
+          url: '/students',
+          method: 'POST',
+          data
+        })
+      } else {
+        const result = await axios({
+          url: `/students/${editId}`,
+          method: 'PUT',
+          data
+        })
+      }
+      myModal.hide()
+      getResult()
+    })
+
+    // 点击编辑按钮
+    document.querySelector('.list').addEventListener('click', async function(e) {
+      if (e.target.className.indexOf('bi-pen') >= 0) {
+        editId = e.target.dataset.id
+        myModal.show()
+        document.querySelector('.modal-title').innerHTML = '修改学员'
+        // 获取详情
+        id = e.target.dataset.id
+        const {data: student} = await axios({
+          url: `/students/${id}`
+        })
+        console.log(student)
+
+        // initPCA 只会渲染省
+        const {data: city} = await axios({
+          url: '/api/city',
+          params: {pname: student.province}
+        })
+        const chtml = city.map(item => `<option value="${item}">${item}</option>`).join('')
+        cs.innerHTML = `<option value="">--省份--</option>${chtml}`
+
+        const {data: area} = await axios({
+          url: '/api/area',
+          params: {
+            pname: student['province'],
+            cname: student['city']
+          }
+        })
+        const ahtml = area.map(item => `<option value="${item}">--${item}--</option>`).join('')
+        as.innerHTML = `<option value="">--地区--</option>${ahtml}`
+
+        const fields = document.querySelectorAll('form [name]')
+        Array.from(fields).forEach(async (item) => {
+          console.log(item)
+          if (item.name === 'gender') {
+            if (+item.value === student[item.name]) item.checked = true 
+          } else {
+            item.value = student[item.name]
+          }
+        })
+
+      }
+    })
   </script>
 </body>
 
